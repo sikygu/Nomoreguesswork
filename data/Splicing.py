@@ -8,7 +8,7 @@ df2 = pd.read_excel(file2_path)
 
 df2['class-1_last_part'] = df2['class-1'].str.split('.').str[-1]
 
-target_col = "1适合LLM"
+target_col = "1-suit-LLM"
 insert_pos = df1.columns.get_loc(target_col) + 1
 
 max_matches = 0

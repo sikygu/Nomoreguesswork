@@ -32,7 +32,7 @@ FEATURES = ["COM_RAT", "Cyclic", "Dc+y", "DP+T", "LCOM", "Level", "INNER", "jf",
 
 def clean_data(df):
     df_clean = df.copy()
-    df_clean = df_clean[df_clean["1适合LLM"].isin([0, 1])]
+    df_clean = df_clean[df_clean["1-suit-LLM"].isin([0, 1])]
     for col in FEATURES:
         df_clean.loc[:, col] = pd.to_numeric(df_clean[col], errors='coerce')
     df_clean = df_clean.dropna(subset=FEATURES, thresh=len(FEATURES) - 2)
@@ -61,14 +61,14 @@ def main():
         df_test_clean = clean_data(df_test)
 
         print(f"Training data cleaned. Original size: {original_train_size}, Processed size: {len(df_train_clean)}")
-        print("Training data target distribution:\n", df_train_clean["1适合LLM"].value_counts())
+        print("Training data target distribution:\n", df_train_clean["1-suit-LLM"].value_counts())
         print(f"Test data cleaned. Original size: {original_test_size}, Processed size: {len(df_test_clean)}")
-        print("Test data target distribution:\n", df_test_clean["1适合LLM"].value_counts())
+        print("Test data target distribution:\n", df_test_clean["1-suit-LLM"].value_counts())
 
         X_train = df_train_clean[FEATURES]
-        y_train = df_train_clean["1适合LLM"].astype(int)
+        y_train = df_train_clean["1-suit-LLM"].astype(int)
         X_test = df_test_clean[FEATURES]
-        y_test = df_test_clean["1适合LLM"].astype(int)
+        y_test = df_test_clean["1-suit-LLM"].astype(int)
 
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)

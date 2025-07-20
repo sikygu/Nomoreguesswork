@@ -25,7 +25,7 @@ FEATURES = ["COM_RAT", "Cyclic", "Dcy*", "DPT*", "LCOM", "Level", "INNER", "jf",
 
 def clean_data(df, features):
     df_clean = df.copy()
-    df_clean = df_clean[df_clean["1适合LLM"].isin([0, 1])]
+    df_clean = df_clean[df_clean["1-suit-LLM"].isin([0, 1])]
     for col in features:
         df_clean.loc[:, col] = pd.to_numeric(df_clean[col], errors='coerce')
     df_clean = df_clean.dropna(
@@ -76,10 +76,10 @@ def main():
         df_test_clean = clean_data(df_test, FEATURES)
 
         print(f"Test data cleaned. Original size: {original_test_size}, Processed size: {len(df_test_clean)}")
-        print("Test data target distribution:\n", df_test_clean["1适合LLM"].value_counts())
+        print("Test data target distribution:\n", df_test_clean["1-suit-LLM"].value_counts())
 
         X_test = df_test_clean[FEATURES].values
-        y_test = df_test_clean["1适合LLM"].astype(int)
+        y_test = df_test_clean["1-suit-LLM"].astype(int)
 
         results = []
 
@@ -162,7 +162,7 @@ def main():
     except Exception as e:
         print(f"Program error: {str(e)}")
         if 'df_test_clean' in locals():
-            print("Cleaned test data sample:\n", df_test_clean[FEATURES].head())
+            print("Cleaned analysis data sample:\n", df_test_clean[FEATURES].head())
 
 
 if __name__ == "__main__":

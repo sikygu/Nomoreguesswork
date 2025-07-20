@@ -3,9 +3,8 @@ import requests
 import json
 import pandas as pd
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
-from typing import List, Tuple
 
 API_KEY = "xxx"
 API_URL = "https://cn2us02.opapi.win/v1/chat/completions"
@@ -17,7 +16,7 @@ HEADERS = {
 
 @dataclass
 class ModelConfig:
-    """模型配置类"""
+    """Model configuration class"""
     name: str
     provider: str
     max_tokens: int = 2048
@@ -25,35 +24,22 @@ class ModelConfig:
     supports_json_mode: bool = False
 
 
-# 支持的模型配置
+# Supported model configurations
 SUPPORTED_MODELS = {
     # OpenAI
     "gpt-3.5-turbo": ModelConfig("gpt-3.5-turbo", "openai", 2048, 0.7, True),
     "gpt-4o-mini-2024-07-18": ModelConfig("gpt-4o-mini-2024-07-18", "openai", 12288, 0.5, True),
 
-    # Anthropic Claude
-    # "claude-3.7-sonnet": ModelConfig("claude-3-5-sonnet-20241022", "anthropic", 4096, 0.7, False),
-
     # Google Gemini
     "gemini-2.5-flash-lite-preview-06-17": ModelConfig("gemini-2.5-flash-lite-preview-06-17", "google", 12288, 0.5, False),
-
-    # Qwen
-    # "qwen-turbo": ModelConfig("qwen-turbo", "qwen", 2048, 0.7, False),
-    # "qwen-plus": ModelConfig("qwen-plus", "qwen", 4096, 0.7, False),
-    # "qwen-max": ModelConfig("qwen-max", "qwen", 4096, 0.7, False),
-    # "qwen2-72b": ModelConfig("qwen2-72b-instruct", "qwen", 4096, 0.7, False),
-
-    # else
 }
 
 
 def get_available_models() -> List[str]:
-
     return list(SUPPORTED_MODELS.keys())
 
 
 def print_available_models():
-
     print("Model List:")
     for provider_group in ["openai", "anthropic", "google", "qwen"]:
         models = [name for name, config in SUPPORTED_MODELS.items() if config.provider == provider_group]
@@ -78,61 +64,43 @@ def get_java_files(project_dir):
     return java_files
 
 
-# 从文件路径提取类名
+# Extract class name from file path
 def get_class_name(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
 
 
-# 读取文件内容
+# Read file content
 def read_file_content(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         return f.read()
 
 
-# 构造提示
+# Read prompt template from local file
+def read_prompt_template() -> str:
+    try:
+        with open("prompt.txt", "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        print("Error: prompt.txt file not found in the current directory")
+        exit(1)
+    except Exception as e:
+        print(f"Error reading prompt.txt: {e}")
+        exit(1)
+
+
+# Construct prompt using template
 def construct_prompt(class_name: str, class_code: str) -> str:
-    prompt = f"""
-Here is a Java class named {class_name}:
-
-{class_code}
-You are a senior professor of software engineering. Please classify each class based on your professional knowledge and the following 25 indicators that describe code characteristics. Read the code, combine the characteristics of test case generation by Evo and LLM, calculate the 25 indicators that describe code characteristics to determine whether it is more appropriate to use LLM or Evosuite to generate test cases.
-
-Evosuite is a tool that automatically generates Java-like test cases using evolutionary algorithms, with the goal of achieving high code coverage. LLM can generate test cases based on its understanding of the code and behavior.
-
-The 15 metrics are as follows:
-
-1. **Number of Transitive Dependencies (Dcy*)** : Derived from Dcy, it refers to the number of other classes that a class directly or indirectly depends on, including the number of directly dependent classes and indirectly dependent classes, which can reflect the deep coupling state of the class in the dependency network.
-2. **Number of Transitive Dependents (DPT*)** : It is an object-oriented coupling feature, referring to the number of classes that indirectly depend on the current class through the dependency chain. It is obtained by constructing a dependency graph and using a graph traversal algorithm to find all transitive dependencies and then statistically analyzing them.
-3. **Cyclic Dependencies ** : It is an object-oriented coupling feature, referring to the number of other classes that a class directly or indirectly depends on, and these dependencies also directly or indirectly depend on that class. It is obtained by constructing a dependency graph, collecting direct dependencies, calculating transitive dependencies, identifying strongly connected components, and then subtracting 1 after statistics, representing the number of other classes involved in circular dependencies.
-4. **Level (Level)** : It is an object-oriented theoretical complexity feature that measures the "number of levels" of the classes a class depends on. When it does not depend on other classes, its value is 0; when it does depend, its value is the maximum Level value among the dependent classes plus 1 (excluding classes that are mutually dependent or cyclically dependent).
-5. Adjusted Level (Level*) : It is a theoretical complexity feature of object-oriented programming. Based on the "number of layers" of the classes that a class depends on, it considers the number of classes in circular dependencies. When it does not depend on other classes, the value is 0. When there is a dependency, the value is the maximum Level* value in the dependent class (non-circular dependency) plus the number of classes that are interdependent with or form a circular dependency with that class.
-6.**Package Dependents (PDpt)** : It is the dependency feature corresponding to PDcy, referring to the number of packages that directly or indirectly depend on the current class. It is obtained by counting the number of packages that directly or indirectly depend on the class.
-7.Lack of Cohesion of Methods (LCOM) : It is an object-oriented cohesion feature, referring to the degree of lack of cohesion among the methods of a class. It is obtained by constructing an inter-method relationship graph (where nodes represent methods and edges represent inter-method relationships) and calculating the number of connected components in the graph, and is related to the cohesion and responsibility of the class.
-8.**Comment Lines of Code (CLOC)** : It is an extension of the concept of source code lines of code (SLOC) proposed by Lazic. It refers to the total number of lines containing comment content in the code file, calculated by strict syntax parsing, reflecting the physical density of comments in the code and its relationship with the interpretability of the code.
-9. **Javadoc Lines of Code (JLOC)** : It is a refined metric of CLOC, specifically counting the number of lines of comments that comply with the Javadoc specification, measuring the density of code comments that follow the conventions of the standard API documentation, and is closely related to the completeness of the API documentation.
-10. **Javadoc Field Coverage (JF)** : It is a coverage feature based on JLOC, referring to the percentage of the number of fields with Javadoc comments to the total number of fields in the class, quantifying the documentation level of fields in the class.
-11. **Javadoc Method Coverage (JM)** : Derived from JLOC, it refers to the percentage of the number of methods with Javadoc annotations to the total number of methods in the class, and is closely related to the integrity of the method-level documentation.
-12. **Comment Ratio (COM_RAT)** : It is a code comment feature, referring to the ratio of the number of comment lines in the code to the total number of code lines (excluding blank lines), reflecting the relative density of comments in the code. It is a classic feature for evaluating code readability.
-13.**Number of Implemented Interfaces (INNER)** : Defined considering the need to describe the size of a class from the perspective of interface implementation, it refers to the total number of interfaces implemented by a class, including all different interfaces implemented directly and inherited from the parent class.
-14.String Processing** : This scenario involves the creation, manipulation, parsing, formatting or transformation of strings, such as processing text data, generating reports, cleaning input, as well as methods like string splitting, concatenation, and regular expression matching.
-15.*Business Logic** : This scenario mainly implements specific business rules or domain logic, which is specific to the application context, such as user permission verification, workflow engine, etc.
-
-
-Please respond in the following JSON format:
-
-{{"class_name": "{class_name}", "tool": "LLM" 或 "Evosuite"}}
-"""
-    return prompt
+    template = read_prompt_template()
+    return template.format(class_name=class_name, class_code=class_code)
 
 
 def construct_api_params(prompt: str, model_name: str) -> Dict[str, Any]:
-
     if model_name not in SUPPORTED_MODELS:
-        raise ValueError(f"no model: {model_name}")
+        raise ValueError(f"Model not supported: {model_name}")
 
     config = SUPPORTED_MODELS[model_name]
 
-    # 基础参数
+    # Base parameters
     params = {
         "model": config.name,
         "messages": [{"role": "user", "content": prompt}],
@@ -141,7 +109,7 @@ def construct_api_params(prompt: str, model_name: str) -> Dict[str, Any]:
         "stream": False
     }
 
-    # 如果模型支持JSON模式，添加响应格式
+    # Add response format if model supports JSON mode
     if config.supports_json_mode:
         params["response_format"] = {"type": "json_object"}
 
@@ -149,24 +117,22 @@ def construct_api_params(prompt: str, model_name: str) -> Dict[str, Any]:
 
 
 def parse_response(response_json: Dict[str, Any], model_name: str) -> Optional[Dict[str, Any]]:
-
     try:
         config = SUPPORTED_MODELS[model_name]
 
-        # 获取响应内容
+        # Get response content based on provider
         if config.provider in ["openai", "qwen"]:
             content = response_json["choices"][0]["message"]["content"]
         elif config.provider == "anthropic":
             content = response_json["content"][0]["text"] if "content" in response_json else \
             response_json["choices"][0]["message"]["content"]
         elif config.provider == "google":
-            content = response_json["candidates"][0]["content"]["parts"][0][
-                "text"] if "candidates" in response_json else response_json["choices"][0]["message"]["content"]
+            content = response_json["candidates"][0]["content"]["parts"][0]["text"] if "candidates" in response_json else \
+            response_json["choices"][0]["message"]["content"]
         else:
-
             content = response_json["choices"][0]["message"]["content"]
 
-
+        # Parse JSON content
         if content.strip().startswith("{"):
             return json.loads(content)
         else:
@@ -175,25 +141,25 @@ def parse_response(response_json: Dict[str, Any], model_name: str) -> Optional[D
             if json_match:
                 return json.loads(json_match.group())
             else:
-                print(f"The response content cannot be parsed: {content}")
+                print(f"Response content cannot be parsed as JSON: {content}")
                 return None
 
     except Exception as e:
-        print(f"error: {e}")
+        print(f"Error parsing response: {e}")
         return None
 
 
 def call_api(prompt: str, model: str = "gpt-3.5-turbo", max_retries: int = 4) -> Optional[Dict[str, Any]]:
-    """调用API，支持多种模型"""
+    """Call API with multiple model support"""
     if model not in SUPPORTED_MODELS:
-        print(f"error: '{model}'")
+        print(f"Error: Model '{model}' is not supported")
         print_available_models()
         return None
 
     for attempt in range(max_retries):
         try:
             params = construct_api_params(prompt, model)
-            print(f"[DEBUG]  {model} request (attempt {attempt + 1}/{max_retries})...")
+            print(f"[DEBUG] Sending request to {model} (attempt {attempt + 1}/{max_retries})...")
 
             response = requests.post(
                 API_URL,
@@ -202,7 +168,7 @@ def call_api(prompt: str, model: str = "gpt-3.5-turbo", max_retries: int = 4) ->
                 timeout=30
             )
             response.raise_for_status()
-            print("[DEBUG] OK！")
+            print("[DEBUG] Request successful!")
 
             res_json = response.json()
             tool_dict = parse_response(res_json, model)
@@ -210,32 +176,32 @@ def call_api(prompt: str, model: str = "gpt-3.5-turbo", max_retries: int = 4) ->
             if tool_dict:
                 return tool_dict
             else:
-                print(f"Failure")
+                print(f"Failed to extract valid JSON from response")
 
         except requests.exceptions.RequestException as e:
-            print(f"Network request failed ( {attempt + 1}/{max_retries}): {e}")
+            print(f"Network request failed (attempt {attempt + 1}/{max_retries}): {e}")
         except json.JSONDecodeError as e:
-            print(f"JSON parsing failed ( {attempt + 1}/{max_retries}): {e}")
+            print(f"JSON parsing failed (attempt {attempt + 1}/{max_retries}): {e}")
         except Exception as e:
-            print(f"API failed ( {attempt + 1}/{max_retries}): {e}")
+            print(f"API call failed (attempt {attempt + 1}/{max_retries}): {e}")
 
         if attempt < max_retries - 1:
             time.sleep(2)
 
-    print(f"All retries failed. Skip this request")
+    print(f"All retries exhausted. Skipping this request")
     return None
 
 
-# 处理单个项目
+# Process a single project
 def process_project(project_dir: str, model: str = "gpt-3.5-turbo") -> Tuple[List[List[str]], str]:
     java_files = get_java_files(project_dir)
     results = []
 
-    print(f"find {len(java_files)} Java")
+    print(f"Found {len(java_files)} Java files in project directory")
 
     for i, file_path in enumerate(java_files, 1):
         class_name = get_class_name(file_path)
-        print(f"process  {i}/{len(java_files)}: {class_name}")
+        print(f"Processing file {i}/{len(java_files)}: {class_name}")
 
         try:
             class_code = read_file_content(file_path)
@@ -245,17 +211,17 @@ def process_project(project_dir: str, model: str = "gpt-3.5-turbo") -> Tuple[Lis
             if response:
                 try:
                     results.append([response["class_name"], response["tool"]])
-                    print(f"  parsing✓ {class_name} -> {response['tool']}")
+                    print(f"  Successfully parsed {class_name} -> {response['tool']}")
                 except KeyError as e:
-                    print(f"  ✗ parsing {class_name}  response was missing a field: {e}")
+                    print(f"  Failed to parse {class_name}: Response missing required field: {e}")
                 except Exception as e:
-                    print(f"  ✗ parsing {class_name} error: {e}")
+                    print(f"  Error parsing {class_name}: {e}")
             else:
-                print(f"  ✗ 跳过 {class_name}，继续处理下一个文件")
+                print(f"  Skipping {class_name} due to empty or invalid response")
         except Exception as e:
-            print(f"  ✗ 处理文件 {class_name} 时出错: {e}")
+            print(f"  Error processing file {class_name}: {e}")
 
-    # 返回结果和项目名
+    # Return results and project name
     project_name = os.path.basename(os.path.normpath(project_dir))
     return results, project_name
 
@@ -341,6 +307,7 @@ public class TestClass {
         print(f"❌ Test failed: {e}")
         return False
 
+
 def run_model_tests(models_to_test: List[str] = None) -> Dict[str, bool]:
     if models_to_test is None:
         models_to_test = list(SUPPORTED_MODELS.keys())
@@ -393,9 +360,10 @@ def run_model_tests(models_to_test: List[str] = None) -> Dict[str, bool]:
 
     return results
 
+
 def main(project_dirs: List[str], output_excel: str, model: str = "gpt-3.5-turbo", test_mode: bool = False):
     if test_mode:
-        print("🧪 Running test mode...")
+        print("🧪 Running in test mode...")
         success = test_model_call(model)
         if success:
             print(f"\n✅ Model {model} passed the test and is ready for use!")
@@ -427,11 +395,14 @@ def main(project_dirs: List[str], output_excel: str, model: str = "gpt-3.5-turbo
 
             if results:
                 df = pd.DataFrame(results, columns=["Class Name", "Suitable Tool"])
-                df.to_excel(writer, sheet_name=project_name[:31], index=False)
-                print(f"\n✅ Results for project {project_name} saved to sheet: {project_name} in {output_excel}")
+                # Excel sheet names have a 31-character limit
+                sheet_name = project_name[:31]
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+                print(f"\n✅ Results for project {project_name} saved to sheet: {sheet_name} in {output_excel}")
                 print(f"  Processed {len(results)} classes")
             else:
                 print(f"\n❌ No results to save for project {project_name}")
+
 
 if __name__ == "__main__":
     print_available_models()
@@ -449,10 +420,10 @@ if __name__ == "__main__":
     output_excel = "gemini-14-classification_results.xlsx"
 
     model = "gemini-2.5-flash-lite-preview-06-17"
-    # Use Options
+    # Operation options
     # 1. Test a single model: Set TEST_MODE = True
-    # 2. Batch testing multiple models: Set RUN_BATCH_TEST = True
-    # 3. Normal operation: Both are set to False
+    # 2. Batch test multiple models: Set RUN_BATCH_TEST = True
+    # 3. Normal operation: Set both to False
     TEST_MODE = False
     RUN_BATCH_TEST = False
 

@@ -1,0 +1,10 @@
+Here is a Java class named {class_name}:
+
+{class_code}
+You are a senior professor of software engineering. Please classify each class based on your professional knowledge and the following 25 indicators that describe code characteristics. Read the code, combine the characteristics of test case generation by Evo and LLM, calculate the 25 indicators that describe code characteristics to determine whether it is more appropriate to use LLM or Evosuite to generate test cases.
+
+Evosuite is a tool that automatically generates Java-like test cases using evolutionary algorithms, with the goal of achieving high code coverage. LLM can generate test cases based on its understanding of the code and behavior.
+
+Please respond in the following JSON format:
+
+{{"class_name": "{class_name}", "tool": "LLM" or "Evosuite"}}
