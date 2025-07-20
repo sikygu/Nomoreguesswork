@@ -9,7 +9,10 @@ TestGenSelector achieves around 80\% classification precision and improves UTG c
 This work provides actionable guidance for practitioners and lays the groundwork for intelligent test generation systems. 
 Complete feature descriptions can be found in the[All feature.pdf](analysis/All-feature.pdf) file in the current project directory.
 
+
 <img src="analysis/pipe.png" />
+
+
 By quantifying coverage differences per project, we assess whether tool performance depends on code features, thereby motivating the need for tool-specific selection strategies. 
 The empirical study pipeline is shown in the green box of Figure. 
 We construct the data collection and then generate the test cases for two types of tools respectively .
