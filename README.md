@@ -2,8 +2,8 @@
 
 By quantifying coverage differences per project, we assess whether tool performance depends on code features, thereby motivating the need for tool-specific selection strategies. 
 The empirical study pipeline is shown in the green box of Figure. 
-We construct the data collection and then generate the test cases for two types of tools respectively . 
-![](C:\Users\17958\Desktop\main.pdf "Overview of the research pipeline")
+We construct the data collection and then generate the test cases for two types of tools respectively .
+<img height="450" src="C:\Users\17958\Desktop\main.pdf" title="Overview of the research pipeline" width="600"/>
 
 # Description of the Full Set of 60 Static Code Features
 
