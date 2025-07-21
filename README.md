@@ -94,7 +94,7 @@ where \( L \) is the set of non-blank code lines. It reflects comment density an
 COM_RAT is the ratio of comment lines to total non-blank code lines:
 
 $$
-\text{COM_RAT} = \frac{\text{CLOC}}{|L|}
+\text{COM\_RAT} = \frac{\text{CLOC}}{|L|}
 $$
 
 This measures the relative density of comments, indicating code readability.
