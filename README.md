@@ -90,15 +90,6 @@ $$
 
 where \( L \) is the set of non-blank code lines. It reflects comment density and code interpretability.
 
-#### Comment Ratio (COM_RAT)
-COM_RAT is the ratio of comment lines to total non-blank code lines:
-
-$$
-\text{COM\_RAT} = \frac{\text{CLOC}}{|L|}
-$$
-
-This measures the relative density of comments, indicating code readability.
-
 #### Javadoc Method Coverage (JM)
 JM measures the percentage of methods with Javadoc comments:
 
