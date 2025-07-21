@@ -28,15 +28,12 @@ OCmax measures the highest cyclomatic complexity among all non-abstract methods 
 #### Average Operation Complexity (OCavg)
 OCavg is the average cyclomatic complexity across all non-abstract methods in a class. It provides an average measure of logical complexity for a class's methods.
 
-Weighted Methods per Class (WMC): Sum of cyclomatic complexities of all methods:
-$$\text{WMC} = \sum (\text{cyclomatic complexity of each method})$$
-
 #### Weighted Methods per Class (WMC)
 WMC is the sum of cyclomatic complexities of all methods in a class, calculated as:
 
-\[
-\text{WMC} = \sum (\text{cyclomatic complexity of each method})
-\]
+
+$$\text{WMC} = \sum (\text{cyclomatic complexity of each method})$$
+
 
 This metric captures the total logical complexity of a class’s method set.
 
@@ -61,18 +58,18 @@ Cyclic counts the number of classes involved in cyclic dependencies (direct or i
 #### Level (Level)
 Level measures the number of dependency "layers" for a class. A class with no dependencies has a Level of 0. For classes with dependencies, it is calculated as:
 
-\[
-\text{Level} = \max(\text{Level of dependent classes}) + 1
-\]
+
+$$\text{Level} = \max(\text{Level of dependent classes}) + 1$$
+
 
 This excludes classes with mutual or cyclic dependencies.
 
 #### Adjusted Level (Level*)
 Level* builds on Level by accounting for cyclic dependencies. It is calculated as:
 
-\[
+$$
 \text{Level*} = \max(\text{Level* of non-cyclic dependencies}) + \text{number of cyclic dependencies}
-\]
+$$
 
 
 #### Depth of Inheritance Tree (DIT)
@@ -87,34 +84,34 @@ These metrics focus on comments and documentation to assess code readability and
 #### Comment Lines of Code (CLOC)
 CLOC counts the total number of lines containing comments in a code file:
 
-\[
+$$
 \text{CLOC} = \left| \{ l \in L \mid l \text{ contains comment content} \} \right|
-\]
+$$
 
 where \( L \) is the set of non-blank code lines. It reflects comment density and code interpretability.
 
 #### Comment Ratio (COM_RAT)
 COM_RAT is the ratio of comment lines to total non-blank code lines:
 
-\[
+$$
 \text{COM_RAT} = \frac{\text{CLOC}}{|L|}
-\]
+$$
 
 This measures the relative density of comments, indicating code readability.
 
 #### Javadoc Method Coverage (JM)
 JM measures the percentage of methods with Javadoc comments:
 
-\[
+$$
 \text{JM} = \frac{|\text{methods with Javadoc comments}|}{|\text{total methods in the class}|} \times 100\%
-\]
+$$
 
 #### Javadoc Field Coverage (JF)
 JF measures the percentage of fields with Javadoc comments:
 
-\[
+$$
 \text{JF} = \frac{|\text{fields with Javadoc comments}|}{|\text{total fields in the class}|} \times 100\%
-\]
+$$
 
 
 ## Program Scale Metrics
@@ -127,25 +124,25 @@ LOC counts the total number of code lines in a class, including comments but exc
 #### Non-Comment Lines of Code (NCLOC)
 NCLOC is LOC minus pure comment lines:
 
-\[
+$$
 \text{NCLOC} = \text{LOC} - \left| \{ l \in L \mid l \text{ is a pure comment line} \} \right|
-\]
+$$
 
 This reflects the scale of executable code.
 
 #### Class Size Attributes (CSA)
 CSA counts non-static attributes in a class:
 
-\[
+$$
 \text{CSA} = \left| \{ f \in F \mid f \text{ is a non-static field defined in the class} \} \right|
-\]
+$$
 
 #### Class Size Operations (CSO)
 CSO counts non-static methods in a class:
 
-\[
+$$
 \text{CSO} = \left| \{ m \in M \mid m \text{ is a non-static method defined in the class} \} \right|
-\]
+$$
 
 #### Class Size (Operations + Attributes) (CSOA)
 CSOA is the sum of CSA and CSO, measuring the logical scale of a class.
@@ -153,9 +150,9 @@ CSOA is the sum of CSA and CSO, measuring the logical scale of a class.
 #### Maximum Operation Size (OSmax)
 OSmax is the number of statements in the largest method in a class:
 
-\[
+$$
 \text{OSmax} = \max( \{ \text{number of statements in method } m \mid m \in M \} )
-\]
+$$
 
 #### Number of Operations Overridden (NOOC)
 NOOC counts methods in a subclass that override parent class methods.
