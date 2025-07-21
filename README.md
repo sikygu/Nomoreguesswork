@@ -28,6 +28,9 @@ OCmax measures the highest cyclomatic complexity among all non-abstract methods 
 #### Average Operation Complexity (OCavg)
 OCavg is the average cyclomatic complexity across all non-abstract methods in a class. It provides an average measure of logical complexity for a class's methods.
 
+Weighted Methods per Class (WMC): Sum of cyclomatic complexities of all methods:
+$$\text{WMC} = \sum (\text{cyclomatic complexity of each method})$$
+
 #### Weighted Methods per Class (WMC)
 WMC is the sum of cyclomatic complexities of all methods in a class, calculated as:
 
