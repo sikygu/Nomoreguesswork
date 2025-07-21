@@ -15,6 +15,7 @@ By quantifying coverage differences per project, we assess whether tool performa
 The empirical study pipeline is shown in the green box of Figure. 
 We construct the data collection and then generate the test cases for two types of tools respectively .
 
+
 The following is a brief description of some features:
 ## Code Complexity Metrics
 This section outlines key metrics used to evaluate code complexity, focusing on logical complexity, coupling, and theoretical complexity.
