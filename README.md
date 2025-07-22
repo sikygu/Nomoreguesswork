@@ -1,4 +1,4 @@
-# Nomoreguesswork
+# No More Guess Work
 
 > *Empowering intelligent test generation through interpretable static analysis and actionable metrics.*
 
@@ -242,12 +242,6 @@ Nomoreguesswork-main/
 ## 🤝 Contributing
 
 Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
